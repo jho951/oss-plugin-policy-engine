@@ -18,7 +18,7 @@ A plugin-friendly Java policy engine for rollout, targeting, and variant evaluat
 
 ```gradle
 dependencies {
-    implementation("io.github.jho951:plugin-policy-engine-config:1.0.0")
+    implementation("io.github.jho951:plugin-policy-engine-config:1.0.1")
 }
 ```
 

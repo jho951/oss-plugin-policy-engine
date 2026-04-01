@@ -41,7 +41,7 @@ GitHub Packages도 병행할 경우:
 3. Maven Central 배포 시크릿을 GitHub Actions에 등록합니다.
 4. `./gradlew clean build`로 전체 빌드를 확인합니다.
 5. `./gradlew publishToMavenLocal`로 로컬 배포를 확인합니다.
-6. `v1.0.0` 같은 태그를 생성한 뒤 push합니다.
+6. `v1.0.1` 같은 태그를 생성한 뒤 push합니다.
 7. `Publish Plugin Policy Engine To Maven Central` 워크플로가 성공하는지 확인합니다.
 8. 릴리스 노트는 [Release notes and tag rules](./release.md)를 기준으로 작성합니다.
 
@@ -67,8 +67,8 @@ GitHub Packages도 병행할 경우:
 예시:
 
 ```bash
-git tag v1.0.0
-git push origin v1.0.0
+git tag v1.0.1
+git push origin v1.0.1
 ```
 
 ## Notes for Maven Central

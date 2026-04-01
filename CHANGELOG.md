@@ -51,3 +51,25 @@ The newest release goes first. The release format follows semantic versioning an
 ### Notes
 
 - Maven Central coordinates use the `plugin-policy-engine-*` artifact prefix.
+
+## 1.0.1 - 2026-04-01
+
+### Summary
+
+- Retry release after Maven Central package conflict on `1.0.0`.
+
+### Breaking Changes
+
+- None.
+
+### New
+
+- No code changes. Release metadata and versioning were updated for a new publish attempt.
+
+### Fix
+
+- Maven Central publish version bumped to avoid immutable coordinate conflict.
+
+### Notes
+
+- Use `v1.0.1` for the release tag.

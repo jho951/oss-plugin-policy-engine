@@ -8,7 +8,7 @@
 
 ```gradle
 dependencies {
-    implementation("io.github.jho951:plugin-policy-engine-config:1.0.0")
+    implementation("io.github.jho951:plugin-policy-engine-config:1.0.1")
 }
 ```
 
