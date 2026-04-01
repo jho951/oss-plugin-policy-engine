@@ -36,17 +36,17 @@ jobs:
 
       - name: Publish signed artifacts
         env:
-          ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.MAVENCENTRAL_USERNAME || secrets.OSSRH_USERNAME }}
-          ORG_GRADLE_PROJECT_ossrhPassword: ${{ secrets.MAVENCENTRAL_PASSWORD || secrets.OSSRH_PASSWORD }}
-          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.SIGNING_KEY }}
-          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.SIGNING_PASSWORD }}
+          ORG_GRADLE_PROJECT_ossrhUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_ossrhPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingKey: ${{ secrets.MAVEN_CENTRAL_GPG_PRIVATE_KEY }}
+          ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.MAVEN_CENTRAL_GPG_PASSPHRASE }}
         run: ./gradlew clean publish
 
       - name: Promote deployment in Central Portal
         env:
-          CENTRAL_USERNAME: ${{ secrets.MAVENCENTRAL_USERNAME || secrets.OSSRH_USERNAME }}
-          CENTRAL_PASSWORD: ${{ secrets.MAVENCENTRAL_PASSWORD || secrets.OSSRH_PASSWORD }}
-          CENTRAL_NAMESPACE: io.github.jho951
+          CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+          CENTRAL_NAMESPACE: ${{ secrets.MAVEN_CENTRAL_NAMESPACE }}
         run: |
           auth="$(printf '%s:%s' "$CENTRAL_USERNAME" "$CENTRAL_PASSWORD" | base64 -w0)"
           curl --fail-with-body -sS -X POST \

@@ -52,6 +52,28 @@ The newest release goes first. The release format follows semantic versioning an
 
 - Maven Central coordinates use the `plugin-policy-engine-*` artifact prefix.
 
+## 1.0.6 - 2026-04-01
+
+### Summary
+
+- Align publish workflow with the exact Maven Central secret names.
+
+### Breaking Changes
+
+- None.
+
+### New
+
+- Workflow now consumes `MAVEN_CENTRAL_*` secrets.
+
+### Fix
+
+- Central Portal publish auth and signing wiring updated to the provided secret names.
+
+### Notes
+
+- Use `v1.0.6` for the release tag.
+
 ## 1.0.5 - 2026-04-01
 
 ### Summary

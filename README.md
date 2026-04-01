@@ -18,7 +18,7 @@ A plugin-friendly Java policy engine for rollout, targeting, and variant evaluat
 
 ```gradle
 dependencies {
-    implementation("io.github.jho951:plugin-policy-engine-config:1.0.5")
+    implementation("io.github.jho951:plugin-policy-engine-config:1.0.6")
 }
 ```
 
@@ -66,7 +66,7 @@ For Maven Central release setup, see [docs/publishing.md](./docs/publishing.md).
 ## Release
 
 1. Rename the GitHub repository to `plugin-policy-engine`.
-2. Register `OSSRH_USERNAME`, `OSSRH_PASSWORD`, `SIGNING_KEY`, and `SIGNING_PASSWORD` in GitHub Secrets.
+2. Register `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `MAVEN_CENTRAL_GPG_PRIVATE_KEY`, and `MAVEN_CENTRAL_GPG_PASSPHRASE` in GitHub Secrets.
 3. Run `./gradlew clean build` and `./gradlew publishToMavenLocal`.
 4. Tag the release with `vMAJOR.MINOR.PATCH` and push it.
 5. Confirm the `Publish Plugin Policy Engine To Maven Central` workflow succeeded.
