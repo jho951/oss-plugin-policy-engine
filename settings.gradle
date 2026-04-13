@@ -1,3 +1,22 @@
+plugins {
+    id 'com.gradleup.nmcp.settings' version '1.4.4'
+}
+
+def optionalSettingProp = { String envName, String propKey ->
+    def envValue = System.getenv(envName)?.trim()
+    envValue ?: providers.gradleProperty(propKey).orNull?.trim()
+}
+
+nmcpSettings {
+    centralPortal {
+        username = optionalSettingProp('MAVEN_CENTRAL_USERNAME', 'mavenCentralUsername')
+        password = optionalSettingProp('MAVEN_CENTRAL_PASSWORD', 'mavenCentralPassword')
+        publishingType = 'AUTOMATIC'
+    }
+}
+
 rootProject.name = "plugin-policy-engine"
 
-include(":core", ":api", ":store-file", ":config")
+include 'plugin-policy-engine-api'
+include 'plugin-policy-engine-core'
+include 'plugin-policy-engine-config'

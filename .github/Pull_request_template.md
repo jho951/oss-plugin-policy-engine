@@ -12,8 +12,8 @@ CONVENTION 예시
 
 ## 📝 Part (해당되는 것만 체크)
 
-- [ ] Core
-- [ ] Config
+- [ ] BE
+- [ ] FE
 - [ ] Infra
 - [ ] Docs
 - [ ] Test
@@ -43,9 +43,9 @@ closes #
 
 ### 1. 주요 변경 사항 요약
 
-- (예) 정책 평가 규칙 추가
-- (예) 새로운 `FlagStore` 구현체 추가
-- (예) Spring Boot 자동구성 옵션 추가
+- (예) 어드민 사용자 목록 조회 API 추가 (`GET /api/admin/users`)
+- (예) User 엔티티에 active 필드 추가 및 마이그레이션 스크립트 작성
+- (예) 어드민 레이아웃 헤더 UI 개선
 
 ### 2. 상세 내용 (선택)
 
@@ -61,9 +61,9 @@ closes #
 복잡한 로직, 트레이드오프, 고민했던 포인트를 적어주면 리뷰 품질이 올라갑니다.
 -->
 
-- (예) `FeatureFlagService`의 평가 순서가 의도와 맞는지 확인 부탁드립니다.
-- (예) 새 저장소 구현의 캐시/재시도 정책이 적절한지 봐주세요.
-- (예) 공개 API 변경이 호환성 규칙과 맞는지 확인 부탁드립니다.
+- (예) `UserService`의 트랜잭션 범위가 적절한지 확인 부탁드립니다.
+- (예) pagination 구현 부분에서 성능/쿼리 최적화 관점에서 봐주세요.
+- (예) 예외 처리 방식이 기존 컨벤션과 맞는지 확인 부탁드립니다.
 
 ---
 
@@ -76,14 +76,14 @@ closes #
 
 ### 1. 로컬 실행 방법
 
-- (예) `./gradlew clean build` 실행
-- (예) `./gradlew publishToMavenLocal` 로 로컬 배포 확인
+- (예) `./gradlew bootRun` 실행
+- (예) `ENV=local` 로 서버 기동
 
 ### 2. 테스트 시나리오
 
-- [ ] 새 플래그 키 평가가 예상대로 동작하는지 확인
-- [ ] `store=FILE` 설정 시 JSON 파일 로딩이 정상인지 확인
-- [ ] `@FeatureGate` 적용 엔드포인트가 허용/거부를 올바르게 처리하는지 확인
+- [ ] (예) `/api/admin/users` 호출 시 신규 필드(active)가 포함되어 응답되는지 확인
+- [ ] (예) 비활성화 사용자 로그인 시 403 응답 확인
+- [ ] (예) 기존 사용자 데이터에 대해 마이그레이션 후 이슈 없는지 확인
 
 ---
 
@@ -109,5 +109,5 @@ UI 변경, 에러 화면, API 응답 예시 등이 있다면 이미지로 첨부
 -->
 
 - (예)
-    - Before: ![before](/images/admin-user-list-before.png)
-    - After : ![after](/images/admin-user-list-after.png)
+    - Before:
+    - After :

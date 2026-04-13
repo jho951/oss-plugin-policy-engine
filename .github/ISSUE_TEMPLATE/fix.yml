@@ -1,0 +1,113 @@
+name: Fix
+description: 버그 수정 작업 (원인/수정 계획/검증/리스크)
+title: "[FIX] "
+labels: ["FIX", "BUG"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ✅ 작성 팁
+        - 이미 제보된 버그(#)가 있으면 먼저 연결해주세요.
+        - **수정 방향(Fix Plan)**과 **검증 방법**을 구체적으로 적어주세요.
+
+  - type: input
+    id: bug_issue
+    attributes:
+      label: "🔗 연결할 버그 이슈"
+      description: "제보 이슈가 있다면 번호를 적어주세요."
+      placeholder: "예: #123"
+    validations:
+      required: false
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: "🐛 버그 요약"
+      description: "어떤 버그를 수정하나요?"
+      placeholder: |
+        예) 특정 IP 범위가 잘못 매칭되는 문제 수정
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: "🔁 재현 절차 (현재)"
+      placeholder: |
+        1. 특정 IP 범위 규칙을 설정한다.
+        2. 경계값 IP로 판정한다.
+        3. 기대와 다른 결과를 확인한다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_after
+    attributes:
+      label: "✅ 수정 후 기대 동작"
+      placeholder: |
+        예) 경계값 IP가 규칙에 맞게 판정되어야 한다.
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: "💻 환경 정보"
+      description: "OS, 브라우저, Java 버전, DB, 배포 환경 등"
+      placeholder: |
+        예) macOS, Java 17, Chrome 122 / Dev 환경
+    validations:
+      required: false
+
+  - type: textarea
+    id: root_cause
+    attributes:
+      label: "🧠 원인 분석 (Root Cause)"
+      description: "가능한 범위에서 원인을 정리해주세요. (추측이면 추측이라고 명시)"
+      placeholder: |
+        예) CIDR prefix 계산이 경계값에서 잘못 처리되었음
+    validations:
+      required: false
+
+  - type: textarea
+    id: fix_plan
+    attributes:
+      label: "🛠 수정 방향 (Fix Plan)"
+      description: "어떻게 수정할지 간단히 적어주세요."
+      placeholder: |
+        예)
+        - 파서 경계값 처리 수정
+        - 관련 테스트 추가
+    validations:
+      required: true
+
+  - type: textarea
+    id: risk
+    attributes:
+      label: "⚠️ 리스크 / 영향 범위"
+      description: "영향받을 수 있는 기능/모듈과 롤백 방법이 있다면 함께 적어주세요."
+      placeholder: |
+        - 영향: 룰 파싱, 판정 엔진
+        - 롤백: 해당 커밋 revert
+    validations:
+      required: false
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: "📎 로그 / 스크린샷 (선택)"
+      render: shell
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: "✅ 체크리스트"
+      options:
+        - label: "동일 케이스로 재현/수정 확인"
+        - label: "주변 영향 범위(관련 기능) 테스트"
+        - label: "관련 테스트 코드 추가/수정"
+        - label: "로그/모니터링에 이상 없음 확인"
+        - label: "관련 문서 업데이트(필요 시)"

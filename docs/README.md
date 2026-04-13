@@ -1,17 +1,26 @@
-# 플러그인 가능한 정책 엔진 문서
+# Docs
 
-`Plugin Policy Engine`은 JVM 정책 엔진입니다. 이 문서는 구조, 사용법, 동작 규칙을 빠르게 확인하기 위한 안내입니다.
+## Guide
 
-## 문서 목록
+### 시작할 때
 
-- [개요 및 모듈 구조](./overview.md)
-- [아키텍처 설계](./architecture.md)
-- [빠른 시작](./quick-start.md)
-- [Spring Boot 설정](./spring-config.md)
-- [평가 규칙](./evaluation-rules.md)
-- [릴리스 노트 및 태그 규칙](./release.md)
-- [변경 이력](../CHANGELOG.md)
-- [GitHub Release 초안 자동화](../.github/release-drafter.yml)
-- [저장소 메타데이터 가이드](./repository-metadata.md)
-- [JSON 스토어 포맷](./json-format.md)
-- [배포 가이드](./publishing.md)
+1. [아키텍처](./architecture.md)
+2. [모듈 가이드](./modules.md)
+3. [구현 가이드](./implementation-guide.md)
+4. [SPI/extension 가이드](./extension-guide.md)
+
+### 문제를 만났을 때
+
+1. [트러블슈팅](./troubleshooting.md)
+
+### 모듈과 테스트
+
+1. [테스트/CI 가이드](./testing-and-ci.md)
+
+## 읽는 순서
+
+- 공개 설정 계약은 `oss-contract` 저장소를 봅니다.
+- 처음 사용하는 사람은 `아키텍처`, `모듈 가이드`, `구현 가이드`, `SPI/extension 가이드` 순서로 보면 됩니다.
+- 테스트를 돌리거나 publish 흐름을 확인할 때는 `테스트/CI 가이드`를 봅니다.
+- SPI를 직접 구현하는 경우 `SPI/extension 가이드`를 먼저 보세요.
+- Spring, Servlet, WebFlux 같은 adapter는 이 저장소의 순수 1계층 본체에 포함하지 않습니다.

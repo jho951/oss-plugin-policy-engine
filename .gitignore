@@ -1,41 +1,47 @@
-HELP.md
-.gradle
-.gradle-home/
-build/
-!gradle/wrapper/gradle-wrapper.jar
-!**/src/main/**/build/
-!**/src/test/**/build/
+# System
+.DS_Store
+Thumbs.db
+ehthumbs.db
+*.swp
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
+# Java
+*.class
+*.log
 
-### IntelliJ IDEA ###
-.idea
+# Gradle
+/.gradle/
+/.gradle-local/
+/build/
+**/build/
+*.kotlin_module
+*.lck
+
+# Secrets
+.env*
+.envrc
+docker/.generated
+*.key
+*.pem
+*.p12
+
+# IntelliJ
+/.idea/
 *.iws
 *.iml
 *.ipr
 out/
-!**/src/main/**/out/
-!**/src/test/**/out/
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
+# Eclipse / editor leftovers
+*.tmp
+*.orig
+.project
+.settings/
 
-### VS Code ###
-.vscode/
-.env
-.env.dev
-.env.*
+# Data
+data/
+
+# Logs / runtime
+*.pid
+*.seed
+*.out
+*.err

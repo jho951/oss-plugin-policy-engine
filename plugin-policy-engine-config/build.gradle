@@ -1,0 +1,16 @@
+dependencies {
+    // config가 사용자에게 제공하는 공개 API
+    api project(":plugin-policy-engine-api")
+
+    // 구현/내부용
+    implementation("com.fasterxml.jackson.core:jackson-databind:${jackson}")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jackson}")
+
+    testImplementation(platform("org.junit:junit-bom:${junit}"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -1,27 +1,26 @@
 # Contributing
 
-## Development Setup
+이 저장소에 기여하려면 아래 기준을 따르면 됩니다.
 
-Requirements:
+## 시작 전
 
-- JDK 17
-- Gradle Wrapper
+- 기존 이슈나 문서를 먼저 확인합니다.
+- 공개 API와 SPI 계약은 호환성을 우선합니다.
+- 보안 관련 변경은 `SECURITY.md` 절차를 따릅니다.
 
-Run:
+## 변경 원칙
 
-```bash
-./gradlew clean build
-```
+- 작은 단위로 변경하고 테스트를 함께 업데이트합니다.
+- 문서와 코드가 어긋나면 둘 다 같이 수정합니다.
+- 공개 artifact 이름과 버전 정책은 `README.md`와 `build.gradle` 기준을 따릅니다.
 
-## Guidelines
+## 검증
 
-- Keep public APIs small and explicit.
-- Preserve module boundaries between `core`, `api`, `store-file`, and `config`.
-- Add tests for behavior changes when modifying evaluation rules or storage implementations.
-- Update docs when introducing new user-facing configuration or artifact changes.
+- 로컬에서 `./gradlew test`를 실행합니다.
+- publish 관련 변경은 CI 워크플로우도 함께 확인합니다.
 
-## Pull Requests
+## 코드 스타일
 
-- Describe the user-visible change.
-- Include test coverage or explain why tests were not added.
-- Note compatibility impact when changing published APIs or Maven coordinates.
+- 기존 패키지 구조를 유지합니다.
+- 외부에 노출되는 타입은 단순하고 예측 가능하게 유지합니다.
+- 운영 환경에서 민감 정보가 로그에 남지 않도록 주의합니다.

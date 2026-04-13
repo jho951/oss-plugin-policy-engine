@@ -1,0 +1,94 @@
+name: Refactor
+description: 기능 변경 없이 코드 품질 개선 (범위/목적/검증/리스크)
+title: "[REFACTOR] "
+labels: ["REFACTOR"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ✅ 작성 팁
+        - 리팩토링의 핵심은 **기능 변화 없음**입니다.
+        - 변경 범위를 명확히 적어야 리뷰/리스크 관리가 쉬워집니다.
+
+  - type: textarea
+    id: target
+    attributes:
+      label: "📝 리팩토링 대상/범위"
+      description: "어느 모듈/패키지/클래스를 리팩토링하나요?"
+      placeholder: |
+        예)
+        - ip-guard-core 내 RuleParser 정리
+        - 공통 판정 결과 모델을 Decision으로 통일
+    validations:
+      required: true
+
+  - type: textarea
+    id: purpose
+    attributes:
+      label: "🎯 리팩토링 목적"
+      description: "왜 리팩토링이 필요한지 적어주세요."
+      placeholder: |
+        예) 중복 코드 제거 / 테스트 가능성 향상 / 가독성 개선 / 향후 확장 대비
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: refactor_menu
+    attributes:
+      label: "🔧 리팩토링 내용 요약"
+      options:
+        - label: "메서드/클래스 분리"
+        - label: "공통 유틸/컴포넌트 추출"
+        - label: "네이밍/패키지 구조 정리"
+        - label: "의존성 정리 (순환 의존 제거 등)"
+
+  - type: textarea
+    id: plan
+    attributes:
+      label: "🧩 구체적인 변경 계획"
+      placeholder: |
+        예)
+        - parser 로직 분리 → 규칙 타입별 파서 정리
+        - 중복 판정 분기 제거 → `Decision` 생성 로직으로 이동
+    validations:
+      required: false
+
+  - type: textarea
+    id: equivalence
+    attributes:
+      label: "✅ 동작 동일성 검증 방법"
+      description: "기존 기능과 동작이 동일함을 어떻게 보장하나요?"
+      placeholder: |
+        - [ ] 기존 테스트 케이스 재사용/보완
+        - [ ] 주요 유스케이스 수동 테스트
+        - [ ] 로그/모니터링으로 동작 확인
+    validations:
+      required: true
+
+  - type: textarea
+    id: test_plan
+    attributes:
+      label: "🧪 테스트 계획 (선택)"
+      placeholder: |
+        예) User CRUD API 전부 호출해 정상 응답 확인 / 로그인-로그아웃 시나리오 전체 확인
+    validations:
+      required: false
+
+  - type: textarea
+    id: risk
+    attributes:
+      label: "⚠️ 리스크 / 영향 범위 / 롤백"
+      placeholder: |
+        - 영향받는 기능/모듈:
+        - 롤백 방법:
+    validations:
+      required: false
+
+  - type: input
+    id: references
+    attributes:
+      label: "📎 참고 자료"
+      placeholder: "예: 관련 문서/가이드 링크, 관련 이슈 #123"
+    validations:
+      required: false

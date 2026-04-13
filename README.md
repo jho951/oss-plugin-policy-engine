@@ -1,86 +1,60 @@
-# Plugin Policy Engine
+# plugin-policy-engine
 
-A plugin-friendly Java policy engine for rollout, targeting, and variant evaluation.
+[![Build](https://github.com/jho951/plugin-policy-engine/actions/workflows/build.yml/badge.svg)](https://github.com/jho951/plugin-policy-engine/actions/workflows/build.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.jho951/plugin-policy-engine-core?label=maven%20central)](https://central.sonatype.com/search?q=jho951)
+[![License](https://img.shields.io/badge/license-MIT-blue)](./LICENSE)
+[![Tag](https://img.shields.io/github/v/tag/jho951/plugin-policy-engine)](https://github.com/jho951/plugin-policy-engine/tags)
 
-![CI](https://github.com/jho951/plugin-policy-engine/actions/workflows/build.yml/badge.svg)
-![Release](https://github.com/jho951/plugin-policy-engine/actions/workflows/publish-central.yml/badge.svg)
-![License](https://img.shields.io/badge/License-MIT-green)
-
-## At a Glance
-
-- Description: `Plugin Policy Engine is a JVM policy engine for rollout, targeting, and variant evaluation.`
-- About: `JVM policy engine with Spring Boot support.`
-- Topics: `java`, `spring-boot`, `feature-flags`, `policy-engine`, `maven-central`, `open-source`
-- Website: `https://github.com/jho951/plugin-policy-engine`
-- Release: signed tags publish to Maven Central via GitHub Actions
-
-## Maven Coordinates
-
-```gradle
-dependencies {
-    implementation("io.github.jho951:plugin-policy-engine-config:1.0.6")
-}
-```
-
-Published artifacts:
+## 공개 좌표
 
 - `io.github.jho951:plugin-policy-engine-core`
 - `io.github.jho951:plugin-policy-engine-api`
-- `io.github.jho951:plugin-policy-engine-store-file`
 - `io.github.jho951:plugin-policy-engine-config`
 
-## Modules
+## 무엇을 제공하나
 
-- `core`: evaluation engine, domain model, `FlagStore`
-- `api`: minimal consumer-facing API (`FeatureFlagClient`)
-- `store-file`: JSON-backed `FlagStore`
-- `config`: Spring Boot auto-configuration starter
+- `plugin-policy-engine-core`: 플래그 정의, 평가 컨텍스트, 평가 결과, 타겟팅/롤아웃 엔진
+- `plugin-policy-engine-api`: 애플리케이션이 의존하는 `FeatureFlagClient` facade
+- `plugin-policy-engine-config`: 순수 Java 구성 API, JSON file store, 기본 client factory
 
-## Documentation
+## 책임 경계
 
-- [Docs index](./docs/README.md)
-- [Overview](./docs/overview.md)
-- [Architecture](./docs/architecture.md)
-- [Quick start](./docs/quick-start.md)
-- [Spring Boot config](./docs/spring-config.md)
-- [Evaluation rules](./docs/evaluation-rules.md)
-- [Release notes and tag rules](./docs/release.md)
-- [Changelog](./CHANGELOG.md)
-- [JSON store format](./docs/json-format.md)
-- [Publishing guide](./docs/publishing.md)
+이 저장소는 1계층 정책 평가 기능만 제공합니다.
 
-## Development
+### 포함
 
-```bash
-./gradlew clean build
+- 기능 플래그 평가 모델
+- allow/deny 타겟팅
+- 속성 기반 eligibility
+- 결정론적 rollout
+- variant 가중치 선택
+- `FlagStore` SPI와 범용 구현
+- 순수 Java 조립 API
+
+### 포함 X
+
+- 특정 서비스 URL 정책
+- 특정 조직 헤더 규약
+- gateway/internal boundary 규칙
+- 도메인 권한 모델
+- Spring, Servlet, WebFlux 같은 framework integration
+
+## 빠른 시작
+
+```gradle
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation("io.github.jho951:plugin-policy-engine-core:<version>")
+    implementation("io.github.jho951:plugin-policy-engine-api:<version>")
+    implementation("io.github.jho951:plugin-policy-engine-config:<version>")
+}
 ```
 
-To publish locally:
+## 문서
 
-```bash
-./gradlew publishToMavenLocal
-```
-
-For Maven Central release setup, see [docs/publishing.md](./docs/publishing.md).
-
-## Release
-
-1. Rename the GitHub repository to `plugin-policy-engine`.
-2. Register `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `MAVEN_CENTRAL_GPG_PRIVATE_KEY`, and `MAVEN_CENTRAL_GPG_PASSPHRASE` in GitHub Secrets.
-3. Run `./gradlew clean build` and `./gradlew publishToMavenLocal`.
-4. Tag the release with `vMAJOR.MINOR.PATCH` and push it.
-5. Confirm the `Publish Plugin Policy Engine To Maven Central` workflow succeeded.
-6. Draft the GitHub Release from [the release template](./.github/RELEASE_TEMPLATE.md) and [changelog](./CHANGELOG.md).
-7. Apply the repository metadata guidance in [docs/repository-metadata.md](./docs/repository-metadata.md).
-
-## Contributing
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md).
-
-## Security
-
-See [SECURITY.md](./SECURITY.md).
-
-## License
-
-Released under the [MIT License](./LICENSE).
+- [docs/README.md](docs/README.md)
+- [구현 가이드](docs/implementation-guide.md)
+- [기여 가이드](CONTRIBUTING.md)

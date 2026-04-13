@@ -1,17 +1,64 @@
 allprojects {
-    group = "io.github.jho951"
-    version = "1.0.6"
+    group = (findProperty("release_group") ?: findProperty("group") ?: "io.github.jho951").toString().trim()
+    version = (findProperty("release_version") ?: findProperty("releaseVersion") ?: findProperty("version") ?: "1.0.6-SNAPSHOT").toString().trim()
 
     repositories {
         mavenCentral()
-        mavenLocal()
     }
+}
+
+ext {
+    junit = (findProperty("junit_version") ?: "5.10.0").toString().trim()
+    jackson = (findProperty("jackson_version") ?: findProperty("jackson") ?: "2.18.3").toString().trim()
 }
 
 subprojects {
     apply plugin: "java-library"
     apply plugin: "maven-publish"
     apply plugin: "signing"
+
+    def githubOrg = (findProperty("github_org") ?: "jho951").toString().trim()
+    def githubRepo = (findProperty("github_repo") ?: "plugin-policy-engine").toString().trim()
+    def githubBaseUrl = "https://github.com/${githubOrg}/${githubRepo}"
+
+    def normalizeSigningKey = { raw ->
+        def text = (raw ?: "").toString().trim()
+        if (!text) return ""
+        text = text.replace("\\r\\n", "\n").replace("\\n", "\n")
+        if (text.startsWith("-----BEGIN PGP PRIVATE KEY BLOCK-----")) return text
+        try {
+            return new String(text.decodeBase64(), "UTF-8").trim()
+        } catch (Exception ignored) {
+            return text
+        }
+    }
+
+    def publishableProjects = [
+            "plugin-policy-engine-api",
+            "plugin-policy-engine-core",
+            "plugin-policy-engine-config",
+    ] as Set
+
+    def artifactIdByProject = [
+            "plugin-policy-engine-api"   : "plugin-policy-engine-api",
+            "plugin-policy-engine-core"  : "plugin-policy-engine-core",
+            "plugin-policy-engine-config": "plugin-policy-engine-config",
+    ]
+
+    def pomMetadataByProject = [
+            "plugin-policy-engine-api": [
+                    name       : "Plugin Policy Engine API",
+                    description: "Public contracts for plugin-friendly policy evaluation."
+            ],
+            "plugin-policy-engine-core": [
+                    name       : "Plugin Policy Engine Core",
+                    description: "Core policy evaluation engine and targeting model."
+            ],
+            "plugin-policy-engine-config": [
+                    name       : "Plugin Policy Engine Config",
+                    description: "Pure Java configuration and default storage wiring."
+            ]
+    ]
 
     java {
         toolchain {
@@ -33,78 +80,118 @@ subprojects {
         }
     }
 
-    publishing {
-        publications {
-            mavenJava(MavenPublication) {
-                from components.java
-                artifactId = "plugin-policy-engine-${project.name}"
-
-                pom {
-                    name = "plugin-policy-engine-${project.name}"
-                    description = "Plugin-friendly Java policy engine modules for targeting, rollout, and variant evaluation."
-                    url = "https://github.com/jho951/plugin-policy-engine"
-                    inceptionYear = "2026"
-
-                    licenses {
-                        license {
-                            name = "MIT License"
-                            url = "https://opensource.org/licenses/MIT"
-                            distribution = "repo"
-                        }
-                    }
-
-                    developers {
-                        developer {
-                            id = "jho951"
-                            name = "jho951"
-                            email = "jho951@users.noreply.github.com"
-                        }
-                    }
-
-                    scm {
-                        connection = "scm:git:git://github.com/jho951/plugin-policy-engine.git"
-                        developerConnection = "scm:git:ssh://git@github.com/jho951/plugin-policy-engine.git"
-                        url = "https://github.com/jho951/plugin-policy-engine"
-                    }
-                }
-            }
-        }
-
-        repositories {
-            if (project.hasProperty("ossrhUsername") && project.hasProperty("ossrhPassword")) {
-                maven {
-                    name = "OSSRH"
-                    def releasesUrl = "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
-                    def snapshotsUrl = "https://central.sonatype.com/repository/maven-snapshots/"
-                    url = uri(version.toString().endsWith("-SNAPSHOT") ? snapshotsUrl : releasesUrl)
-                    credentials {
-                        username = project.findProperty("ossrhUsername")
-                        password = project.findProperty("ossrhPassword")
-                    }
-                }
-            }
-
-            if (project.hasProperty("githubUsername") && project.hasProperty("githubToken")) {
-                maven {
-                    name = "GitHubPackages"
-                    url = uri("https://maven.pkg.github.com/jho951/plugin-policy-engine")
-                    credentials {
-                        username = project.findProperty("githubUsername")
-                        password = project.findProperty("githubToken")
-                    }
-                }
-            }
-        }
+    test {
+        useJUnitPlatform()
     }
 
-    signing {
-        def signingKey = project.findProperty("signingKey")
-        def signingPassword = project.findProperty("signingPassword")
-        required { gradle.taskGraph.allTasks.any { it.name.startsWith("publish") } }
+    if (publishableProjects.contains(project.name)) {
+        publishing {
+            repositories {
+                maven {
+                    def isSnapshot = project.version.toString().endsWith("SNAPSHOT")
+                    def releaseRepo = (System.getenv("MAVEN_CENTRAL_RELEASE_URL")
+                            ?: project.findProperty("mavenCentralReleaseUrl")
+                            ?: "https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/") as String
+                    def snapshotRepo = (System.getenv("MAVEN_CENTRAL_SNAPSHOT_URL")
+                            ?: project.findProperty("mavenCentralSnapshotUrl")
+                            ?: "https://central.sonatype.com/repository/maven-snapshots/") as String
 
-        if (signingKey && signingPassword) {
-            useInMemoryPgpKeys(signingKey, signingPassword)
-            sign(publishing.publications.mavenJava)
+                    name = "CentralPortal"
+                    url = uri(isSnapshot ? snapshotRepo : releaseRepo)
+                    credentials {
+                        username = (System.getenv("MAVEN_CENTRAL_USERNAME")
+                                ?: project.findProperty("mavenCentralUsername")
+                                ?: project.findProperty("ossrhUsername")
+                                ?: "") as String
+                        password = (System.getenv("MAVEN_CENTRAL_PASSWORD")
+                                ?: project.findProperty("mavenCentralPassword")
+                                ?: project.findProperty("ossrhPassword")
+                                ?: "") as String
+                    }
+                }
+            }
+
+            publications {
+                mavenJava(MavenPublication) {
+                    from components.java
+                    groupId = project.group.toString()
+                    artifactId = artifactIdByProject.get(project.name, "plugin-policy-engine-${project.name}")
+                    version = project.version.toString()
+
+                    def metadata = pomMetadataByProject.get(project.name, [
+                            name       : "plugin-policy-engine-${project.name}",
+                            description: "Plugin-friendly policy engine module."
+                    ])
+
+                    pom {
+                        name = metadata.name
+                        description = metadata.description
+                        url = githubBaseUrl
+                        inceptionYear = "2026"
+
+                        licenses {
+                            license {
+                                name = "MIT License"
+                                url = "https://opensource.org/licenses/MIT"
+                                distribution = "repo"
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                id = "jho951"
+                                name = "jho951"
+                                email = "jho951@users.noreply.github.com"
+                            }
+                        }
+
+                        scm {
+                            connection = "scm:git:${githubBaseUrl}.git"
+                            developerConnection = "scm:git:ssh://git@github.com/${githubOrg}/${githubRepo}.git"
+                            url = githubBaseUrl
+                        }
+                    }
+                }
+            }
+        }
+
+        signing {
+            def signingKey = normalizeSigningKey(System.getenv("MAVEN_CENTRAL_GPG_PRIVATE_KEY")
+                    ?: project.findProperty("mavenCentralSigningKey")
+                    ?: "")
+            def signingPassword = (System.getenv("MAVEN_CENTRAL_GPG_PASSPHRASE")
+                    ?: project.findProperty("mavenCentralSigningPassword")
+                    ?: "").toString()
+            required { gradle.taskGraph.allTasks.any { it.name.startsWith("publish") } }
+
+            if (signingKey && signingPassword) {
+                useInMemoryPgpKeys(signingKey, signingPassword)
+                sign(publishing.publications.mavenJava)
+            }
+        }
+
+        tasks.withType(PublishToMavenRepository).configureEach {
+            doFirst {
+                def username = (System.getenv("MAVEN_CENTRAL_USERNAME")
+                        ?: project.findProperty("mavenCentralUsername")
+                        ?: project.findProperty("ossrhUsername")
+                        ?: "").toString()
+                def password = (System.getenv("MAVEN_CENTRAL_PASSWORD")
+                        ?: project.findProperty("mavenCentralPassword")
+                        ?: project.findProperty("ossrhPassword")
+                        ?: "").toString()
+                def key = (System.getenv("MAVEN_CENTRAL_GPG_PRIVATE_KEY")
+                        ?: project.findProperty("mavenCentralSigningKey")
+                        ?: "")
+                key = normalizeSigningKey(key)
+
+                if (!username || !password) {
+                    throw new GradleException("Missing Central Portal credentials. Set MAVEN_CENTRAL_USERNAME/MAVEN_CENTRAL_PASSWORD.")
+                }
+                if (!key) {
+                    throw new GradleException("Missing signing key. Set MAVEN_CENTRAL_GPG_PRIVATE_KEY (or mavenCentralSigningKey).")
+                }
+            }
         }
     }
 }
