@@ -20,9 +20,6 @@
 ## 책임 경계
 
 이 저장소는 1계층 정책 평가 기능만 제공합니다.
-
-### 포함
-
 - 기능 플래그 평가 모델
 - allow/deny 타겟팅
 - 속성 기반 eligibility
@@ -47,42 +44,10 @@ repositories {
 }
 
 dependencies {
-    implementation("io.github.jho951:plugin-policy-engine-core:2.0.0")
-    implementation("io.github.jho951:plugin-policy-engine-api:2.0.0")
-    implementation("io.github.jho951:plugin-policy-engine-config:2.0.0")
+    implementation("io.github.jho951:plugin-policy-engine-core:<version>")
+    implementation("io.github.jho951:plugin-policy-engine-api:<version>")
+    implementation("io.github.jho951:plugin-policy-engine-config:<version>")
 }
 ```
 
-```java
-InMemoryFlagStore store = new InMemoryFlagStore();
-store.put(FlagDefinition.builder("checkout.newFlow")
-    .enabled(true)
-    .rolloutPercent(100)
-    .build());
-
-FeatureFlagClient flags = FeatureFlagClientFactory.create(store);
-
-FlagContext ctx = FlagContext.builder()
-    .userId("user-1")
-    .build();
-
-boolean enabled = flags.isEnabled("checkout.newFlow", ctx);
-```
-
-JSON 파일 기반으로 조립할 때:
-
-```java
-FeatureFlagClient flags = FeatureFlagClientFactory.create(
-    FeatureFlagConfig.builder()
-        .store(FeatureFlagConfig.Store.FILE)
-        .filePath("/etc/app/flags.json")
-        .cacheTtl(Duration.ofSeconds(3))
-        .build()
-);
-```
-
-## 문서
-
-- [docs/README.md](docs/README.md)
-- [구현 가이드](docs/implementation-guide.md)
-- [기여 가이드](CONTRIBUTING.md)
+## [문서](docs/README.md)
