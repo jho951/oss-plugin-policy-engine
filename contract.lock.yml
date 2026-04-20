@@ -1,0 +1,36 @@
+oss_contract:
+  repo: https://github.com/jho951/oss-contract.git
+  ref: main
+  commit: 3ee4e1aadfd3410de32a64c156fb69a2099a973a
+
+service:
+  name: plugin-policy-engine
+  branch: main
+  layer: layer1
+  role: oss-module
+
+standards:
+  registry:
+    - registry/layer1/README.md
+    - registry/layer1/standards/plugin-policy-engine.md
+  structure:
+    - registry/layer1/structure/build-gradle.md
+    - registry/layer1/structure/settings-gradle.md
+    - registry/layer1/structure/gradle-properties.md
+  operations:
+    - registry/layer1/operations/ci-cd.md
+    - registry/layer1/operations/maven-central.md
+    - registry/layer1/operations/checklist.md
+  repository_state:
+    - repositories/layer1/plugin-policy-engine/README.md
+
+validation:
+  docs_structure: true
+  gradle_structure: true
+  publish_structure: true
+  ci_cd: true
+  repository_tree: true
+
+notes:
+  owner: plugin-policy-engine
+  automation_level: guardrail
