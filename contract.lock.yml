@@ -1,7 +1,7 @@
 oss_contract:
   repo: https://github.com/jho951/oss-contract.git
-  ref: main
-  commit: 3ee4e1aadfd3410de32a64c156fb69a2099a973a
+  ref: master
+  commit: e882d4d9e371c85bf7c60ea1779c6eed5b715274
 
 service:
   name: plugin-policy-engine
