@@ -11,30 +11,11 @@
 - `io.github.jho951:plugin-policy-engine-api`
 - `io.github.jho951:plugin-policy-engine-config`
 
-## 무엇을 제공하나
+## 모듈
 
-- `plugin-policy-engine-core`: 플래그 정의, 평가 컨텍스트, 평가 결과, 타겟팅/롤아웃 엔진
-- `plugin-policy-engine-api`: 애플리케이션이 의존하는 `FeatureFlagClient` facade
-- `plugin-policy-engine-config`: 순수 Java 구성 API, JSON file store, 기본 client factory
-
-## 책임 경계
-
-이 저장소는 1계층 정책 평가 기능만 제공합니다.
-- 기능 플래그 평가 모델
-- allow/deny 타겟팅
-- 속성 기반 eligibility
-- 결정론적 rollout
-- variant 가중치 선택
-- `FlagStore` SPI와 범용 구현
-- 순수 Java 조립 API
-
-### 포함 X
-
-- 특정 서비스 URL 정책
-- 특정 조직 헤더 규약
-- gateway/internal boundary 규칙
-- 도메인 권한 모델
-- Spring, Servlet, WebFlux 같은 framework integration
+- `plugin-policy-engine-core`: 정책 정의, 평가 컨텍스트, 평가 결과, 타겟팅/롤아웃 엔진
+- `plugin-policy-engine-api`: 애플리케이션이 의존하는 `PolicyEngineClient` 계약
+- `plugin-policy-engine-config`: 순수 Java 구성 API, JSON file store, 기본 클라이언트 팩토리
 
 ## 빠른 시작
 
@@ -50,4 +31,5 @@ dependencies {
 }
 ```
 
-## [문서](docs/README.md)
+## 문서
+[README](docs/README.md)

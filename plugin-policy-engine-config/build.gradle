@@ -3,14 +3,6 @@ dependencies {
     api project(":plugin-policy-engine-api")
 
     // 구현/내부용
-    implementation("com.fasterxml.jackson.core:jackson-databind:${jackson}")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jackson}")
-
-    testImplementation(platform("org.junit:junit-bom:${junit}"))
-    testImplementation("org.junit.jupiter:junit-jupiter")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
-
-test {
-    useJUnitPlatform()
+    implementation("com.fasterxml.jackson.core:jackson-databind:${rootProject.config.jacksonVersion}")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${rootProject.config.jacksonVersion}")
 }

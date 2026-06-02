@@ -1,6 +1,6 @@
 package com.pluginpolicyengine.store.file;
 
-import com.pluginpolicyengine.core.FlagDefinition;
+import com.pluginpolicyengine.core.PolicyDefinition;
 import com.pluginpolicyengine.core.Targeting;
 
 import com.fasterxml.jackson.databind.*;
@@ -9,16 +9,16 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.util.*;
 
 /**
- * 플래그 정의용 내부 JSON 직렬화/역직렬화 유틸리티입니다.
+ * 정책 정의용 내부 JSON 직렬화/역직렬화 유틸리티입니다.
  */
-final class JsonFlagSerde {
+final class JsonPolicySerde {
 
 	private final ObjectMapper om;
 
 	/**
 	 * 이 프로젝트 기본 설정으로 Jackson serde를 생성합니다.
 	 */
-	JsonFlagSerde() {
+	JsonPolicySerde() {
 		this.om = new ObjectMapper()
 			.registerModule(new JavaTimeModule())
 			.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -37,18 +37,18 @@ final class JsonFlagSerde {
 	 *   { "key": "search.ranking", ... }
 	 * ]
 	 * @param json 객체 맵 또는 리스트 형식의 JSON 문자열
-	 * @return 파싱된 플래그 맵(입력이 잘못되었거나 읽을 수 없으면 빈 맵)
+	 * @return 파싱된 정책 맵(입력이 잘못되었거나 읽을 수 없으면 빈 맵)
 	 */
-	Map<String, FlagDefinition> parseToMap(String json) {
-		if (json == null || json.isBlank()) return new HashMap<>();
+	Map<String, PolicyDefinition> parseToMap(String json) {
+		if (isBlank(json)) return new HashMap<>();
 
 		try {
 			JsonNode root = om.readTree(json);
-			Map<String, FlagDefinition> out = new HashMap<>();
+			Map<String, PolicyDefinition> out = new HashMap<>();
 
 			if (root.isArray()) {
 				for (JsonNode n : root) {
-					FlagDefinition def = toCore(n);
+					PolicyDefinition def = toCore(n);
 					if (def != null) out.put(def.key(), def);
 				}
 				return out;
@@ -61,7 +61,7 @@ final class JsonFlagSerde {
 					String key = e.getKey();
 					JsonNode node = e.getValue();
 
-					FlagDefinition def = toCore(node, key);
+					PolicyDefinition def = toCore(node, key);
 					if (def != null) out.put(def.key(), def);
 				}
 				return out;
@@ -73,25 +73,25 @@ final class JsonFlagSerde {
 		}
 	}
 
-	private FlagDefinition toCore(JsonNode node) {
+	private PolicyDefinition toCore(JsonNode node) {
 		return toCore(node, null);
 	}
 
-	private FlagDefinition toCore(JsonNode node, String keyFromMap) {
+	private PolicyDefinition toCore(JsonNode node, String keyFromMap) {
 		if (node == null || node.isNull()) return null;
 
 		String key = text(node, "key");
-		if (key == null || key.isBlank()) key = keyFromMap;
-		if (key == null || key.isBlank()) return null;
+		if (isBlank(key)) key = keyFromMap;
+		if (isBlank(key)) return null;
 
 		boolean enabled = bool(node, "enabled", true);
 		int rolloutPercent = integer(node, "rolloutPercent", 100);
 		String defaultVariant = text(node, "defaultVariant");
-		if (defaultVariant == null || defaultVariant.isBlank()) defaultVariant = "on";
+		if (isBlank(defaultVariant)) defaultVariant = "on";
 
 		Targeting targeting = parseTargeting(node.get("targeting"));
 
-		FlagDefinition.Builder b = FlagDefinition.builder(key)
+		PolicyDefinition.Builder b = PolicyDefinition.builder(key)
 			.enabled(enabled)
 			.rolloutPercent(rolloutPercent)
 			.defaultVariant(defaultVariant)
@@ -102,7 +102,7 @@ final class JsonFlagSerde {
 			for (JsonNode v : variants) {
 				String name = text(v, "name");
 				int weight = integer(v, "weight", 0);
-				if (name != null && !name.isBlank() && weight > 0) {
+				if (!isBlank(name) && weight > 0) {
 					b.variant(name, weight);
 				}
 			}
@@ -161,5 +161,9 @@ final class JsonFlagSerde {
 	private static int integer(JsonNode node, String field, int def) {
 		JsonNode v = node.get(field);
 		return (v != null && v.canConvertToInt()) ? v.asInt() : def;
+	}
+
+	private static boolean isBlank(String value) {
+		return value == null || value.trim().isEmpty();
 	}
 }

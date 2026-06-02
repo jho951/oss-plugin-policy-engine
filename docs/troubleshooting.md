@@ -1,35 +1,35 @@
 # 트러블슈팅
 
-## 1. `FeatureFlagClientFactory.create(config)`에서 filePath 오류가 난다
+## 1. `PolicyEngineClientFactory.create(config)`에서 filePath 오류가 난다
 
 ### 원인
-- `FeatureFlagConfig.Store.FILE`을 선택했지만 `filePath`가 비어 있습니다.
+- `PolicyEngineConfig.Store.FILE`을 선택했지만 `filePath`가 비어 있습니다.
 
 ### 조치
-- `filePath("/path/to/flags.json")`를 설정합니다.
-- 파일 저장소가 필요 없으면 `FeatureFlagConfig.memory()`를 사용합니다.
+- `filePath("/path/to/policies.json")`를 설정합니다.
+- 파일 저장소가 필요 없으면 `PolicyEngineConfig.memory()`를 사용합니다.
 
-## 2. 플래그가 항상 OFF로 평가된다
+## 2. 정책이 항상 OFF로 평가된다
 
 ### 원인
-- `FlagStore`에서 해당 key를 찾지 못했습니다.
+- `PolicyStore`에서 해당 key를 찾지 못했습니다.
 - `enabled=false`로 정의되어 있습니다.
 - rollout 기준값인 `userId`나 `attrs["anonId"]`가 없습니다.
 - rollout bucket이 대상 비율 밖입니다.
 
 ### 조치
-- `FlagDecision.reason()` 값을 먼저 확인합니다.
-- 플래그 key와 JSON 정의를 확인합니다.
-- rollout을 쓰는 경우 `FlagContext.userId()` 또는 `anonId`를 넣습니다.
+- `PolicyDecision.reason()` 값을 먼저 확인합니다.
+- 정책 key와 JSON 정의를 확인합니다.
+- rollout을 쓰는 경우 `PolicyContext.userId()` 또는 `anonId`를 넣습니다.
 
 ## 3. 타겟팅 조건을 만족하지 못한다
 
 ### 원인
-- `allowUserIds`, `allowGroups`, `requireAttrsIn` 값과 `FlagContext` 값이 일치하지 않습니다.
+- `allowUserIds`, `allowGroups`, `requireAttrsIn` 값과 `PolicyContext` 값이 일치하지 않습니다.
 - `denyUserIds` 또는 `denyGroups`가 먼저 매칭되었습니다.
 
 ### 조치
-- `FlagContext.groups()`와 `FlagContext.attrs()` 구성을 확인합니다.
+- `PolicyContext.groups()`와 `PolicyContext.attrs()` 구성을 확인합니다.
 - deny 규칙은 allow 규칙보다 우선한다는 점을 확인합니다.
 
 ## 4. variant가 기대와 다르다
@@ -45,7 +45,7 @@
 ## 5. JSON 파일을 바꿨는데 반영되지 않는다
 
 ### 원인
-- `JsonFileFlagStore`의 `cacheTtl` 동안 기존 캐시를 사용하고 있습니다.
+- `JsonFilePolicyStore`의 `cacheTtl` 동안 기존 캐시를 사용하고 있습니다.
 - 파일 수정 시간이 바뀌지 않았을 수 있습니다.
 
 ### 조치

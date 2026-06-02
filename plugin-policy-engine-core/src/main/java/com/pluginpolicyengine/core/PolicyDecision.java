@@ -1,13 +1,14 @@
 package com.pluginpolicyengine.core;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * 기능 플래그 평가 결과를 담는 불변 객체입니다.
+ * 정책 평가 결과를 담는 불변 객체입니다.
  */
-public final class FlagDecision {
-	private final boolean enabled;
+public final class PolicyDecision {
+	private final boolean allowed;
 	private final String variant;
 	private final String reason;
 	private final Map<String, Object> meta;
@@ -15,22 +16,22 @@ public final class FlagDecision {
 	/**
 	 * 평가 결과 객체를 생성합니다.
 	 *
-	 * @param enabled 최종 활성 상태
+	 * @param allowed 최종 허용 여부
 	 * @param variant 선택된 variant 이름
 	 * @param reason 기계 판독 가능한 사유 코드
 	 * @param meta 진단용 추가 메타데이터(선택)
 	 */
-	public FlagDecision(boolean enabled, String variant, String reason, Map<String, Object> meta) {
-		this.enabled = enabled;
+	public PolicyDecision(boolean allowed, String variant, String reason, Map<String, Object> meta) {
+		this.allowed = allowed;
 		this.variant = variant;
 		this.reason = reason;
-		this.meta = meta == null ? Map.of() : Collections.unmodifiableMap(meta);
+		this.meta = meta == null ? Collections.<String, Object>emptyMap() : Collections.unmodifiableMap(new LinkedHashMap<>(meta));
 	}
 
 	/**
-	 * @return 플래그 활성 여부
+	 * @return 정책 허용 여부
 	 */
-	public boolean enabled() { return enabled; }
+	public boolean allowed() { return allowed; }
 
 	/**
 	 * @return 선택된 variant 이름

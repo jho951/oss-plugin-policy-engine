@@ -2,13 +2,13 @@
 
 ## 로컬 테스트 실행
 
-### 전체 빌드:
+### 전체 빌드
 
 ```bash
 ./gradlew clean build
 ```
 
-### 모듈 단위 테스트:
+### 모듈 단위 테스트
 
 ```bash
 ./gradlew :plugin-policy-engine-core:test
@@ -23,7 +23,7 @@
 - `plugin-policy-engine-api`
   - 현재 main source compile 검증
 - `plugin-policy-engine-config`
-  - `FeatureFlagClientFactoryTest`
+  - `PolicyEngineClientFactoryTest`
 
 ## GitHub Actions
 

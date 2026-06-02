@@ -4,14 +4,14 @@ import java.time.Duration;
 import java.util.Objects;
 
 /**
- * 기능 플래그 엔진을 구성하기 위한 순수 Java 설정 객체입니다.
+ * 정책 엔진을 구성하기 위한 순수 Java 설정 객체입니다.
  */
-public final class FeatureFlagConfig {
+public final class PolicyEngineConfig {
 	private final Store store;
 	private final String filePath;
 	private final Duration cacheTtl;
 
-	private FeatureFlagConfig(Builder builder) {
+	private PolicyEngineConfig(Builder builder) {
 		this.store = Objects.requireNonNull(builder.store, "store");
 		this.filePath = builder.filePath;
 		this.cacheTtl = builder.cacheTtl == null ? Duration.ofSeconds(3) : builder.cacheTtl;
@@ -21,9 +21,9 @@ public final class FeatureFlagConfig {
 	 * 지원하는 저장소 백엔드 종류입니다.
 	 */
 	public enum Store {
-		/** JVM 메모리에 저장된 플래그를 사용하는 저장소입니다. */
+		/** JVM 메모리에 저장된 정책을 사용하는 저장소입니다. */
 		MEMORY,
-		/** 외부 JSON 파일에서 플래그를 읽는 저장소입니다. */
+		/** 외부 JSON 파일에서 정책을 읽는 저장소입니다. */
 		FILE
 	}
 
@@ -32,7 +32,7 @@ public final class FeatureFlagConfig {
 	 *
 	 * @return 메모리 저장소용 설정
 	 */
-	public static FeatureFlagConfig memory() {
+	public static PolicyEngineConfig memory() {
 		return builder().store(Store.MEMORY).build();
 	}
 
@@ -42,7 +42,7 @@ public final class FeatureFlagConfig {
 	 * @param filePath JSON 파일 경로
 	 * @return 파일 저장소용 설정
 	 */
-	public static FeatureFlagConfig file(String filePath) {
+	public static PolicyEngineConfig file(String filePath) {
 		return builder().store(Store.FILE).filePath(filePath).build();
 	}
 
@@ -56,7 +56,7 @@ public final class FeatureFlagConfig {
 	}
 
 	/**
-	 * @return 선택된 플래그 저장소 백엔드
+	 * @return 선택된 정책 저장소 백엔드
 	 */
 	public Store store() {
 		return store;
@@ -77,7 +77,7 @@ public final class FeatureFlagConfig {
 	}
 
 	/**
-	 * {@link FeatureFlagConfig} 빌더입니다.
+	 * {@link PolicyEngineConfig} 빌더입니다.
 	 */
 	public static final class Builder {
 		private Store store = Store.MEMORY;
@@ -122,8 +122,8 @@ public final class FeatureFlagConfig {
 		 *
 		 * @return 설정 객체
 		 */
-		public FeatureFlagConfig build() {
-			return new FeatureFlagConfig(this);
+		public PolicyEngineConfig build() {
+			return new PolicyEngineConfig(this);
 		}
 	}
 }

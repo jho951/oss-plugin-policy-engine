@@ -1,16 +1,19 @@
 package com.pluginpolicyengine.core;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Collections;
+import java.util.Collection;
 
-/**
- * 타게팅 및 롤아웃 규칙 평가에 사용하는 요청 컨텍스트입니다.
- */
-public final class FlagContext {
+/** 타게팅 및 롤아웃 규칙 평가에 사용하는 요청 컨텍스트입니다. */
+public final class PolicyContext {
 	private final String userId;              // deterministic rollout/AB의 기준
 	private final Set<String> groups;         // "beta", "staff" 등
 	private final Map<String, String> attrs;  // "region"="KR", "plan"="PRO" 등
 
-	private FlagContext(Builder b) {
+	private PolicyContext(Builder b) {
 		this.userId = b.userId;
 		this.groups = Collections.unmodifiableSet(new HashSet<>(b.groups));
 		this.attrs = Collections.unmodifiableMap(new HashMap<>(b.attrs));
@@ -32,14 +35,14 @@ public final class FlagContext {
 	public Map<String, String> attrs() { return attrs; }
 
 	/**
-	 * {@link FlagContext} 빌더를 생성합니다.
+	 * {@link PolicyContext} 빌더를 생성합니다.
 	 *
 	 * @return 컨텍스트 빌더
 	 */
 	public static Builder builder() { return new Builder(); }
 
 	/**
-	 * {@link FlagContext} 빌더입니다.
+	 * {@link PolicyContext} 빌더입니다.
 	 */
 	public static final class Builder {
 		private String userId;
@@ -88,10 +91,10 @@ public final class FlagContext {
 		public Builder attrs(Map<String,String> m) { if (m != null) this.attrs.putAll(m); return this; }
 
 		/**
-		 * 불변 {@link FlagContext}를 생성합니다.
+		 * 불변 {@link PolicyContext}를 생성합니다.
 		 *
 		 * @return 새 컨텍스트 인스턴스
 		 */
-		public FlagContext build() { return new FlagContext(this); }
+		public PolicyContext build() { return new PolicyContext(this); }
 	}
 }

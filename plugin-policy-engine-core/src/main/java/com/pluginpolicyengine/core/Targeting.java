@@ -1,16 +1,18 @@
 package com.pluginpolicyengine.core;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-/**
- * 허용/차단 및 속성 기반 자격 조건을 정의하는 타게팅 규칙입니다.
- */
+/** 허용/차단 및 속성 기반 자격 조건을 정의하는 타게팅 규칙입니다. */
 public final class Targeting {
 	private final Set<String> allowUserIds;
 	private final Set<String> denyUserIds;
 	private final Set<String> allowGroups;
 	private final Set<String> denyGroups;
-	private final Map<String, Set<String>> requireAttrsIn; // attrKey -> allowedValues
+	private final Map<String, Set<String>> requireAttrsIn;
 
 	private Targeting(Builder b) {
 		this.allowUserIds = unmodSet(b.allowUserIds);
@@ -23,7 +25,7 @@ public final class Targeting {
 	private static Set<String> unmodSet(Set<String> s) { return Collections.unmodifiableSet(new HashSet<>(s)); }
 	private static Map<String, Set<String>> unmodMapSet(Map<String, Set<String>> m) {
 		Map<String, Set<String>> out = new HashMap<>();
-		for (var e : m.entrySet()) out.put(e.getKey(), Collections.unmodifiableSet(new HashSet<>(e.getValue())));
+		for (Map.Entry<String, Set<String>> e : m.entrySet()) out.put(e.getKey(), Collections.unmodifiableSet(new HashSet<>(e.getValue())));
 		return Collections.unmodifiableMap(out);
 	}
 
@@ -47,7 +49,7 @@ public final class Targeting {
 	 * @param ctx 요청 컨텍스트
 	 * @return 차단 규칙과 일치하면 {@code true}
 	 */
-	public boolean isExplicitlyDenied(FlagContext ctx) {
+	public boolean isExplicitlyDenied(PolicyContext ctx) {
 		String uid = ctx.userId();
 		if (uid != null && denyUserIds.contains(uid)) return true;
 		for (String g : ctx.groups()) if (denyGroups.contains(g)) return true;
@@ -60,7 +62,7 @@ public final class Targeting {
 	 * @param ctx 요청 컨텍스트
 	 * @return 허용 규칙과 일치하면 {@code true}
 	 */
-	public boolean isExplicitlyAllowed(FlagContext ctx) {
+	public boolean isExplicitlyAllowed(PolicyContext ctx) {
 		String uid = ctx.userId();
 		if (uid != null && allowUserIds.contains(uid)) return true;
 		for (String g : ctx.groups()) if (allowGroups.contains(g)) return true;
@@ -82,11 +84,11 @@ public final class Targeting {
 	 * @param ctx 요청 컨텍스트
 	 * @return 자격 조건을 만족하면 {@code true}
 	 */
-	public boolean matchesEligibility(FlagContext ctx) {
+	public boolean matchesEligibility(PolicyContext ctx) {
 		// allow-list/그룹/속성 조건 중 “하나라도” 충족하면 eligible로 두고 싶으면 여기서 OR로 바꾸면 됨.
 		// v1은 운영에서 흔한 방식: "requireAttrsIn"은 AND, allowUserIds/allowGroups는 OR
 		if (!requireAttrsIn.isEmpty()) {
-			for (var e : requireAttrsIn.entrySet()) {
+			for (Map.Entry<String, Set<String>> e : requireAttrsIn.entrySet()) {
 				String actual = ctx.attrs().get(e.getKey());
 				if (actual == null || !e.getValue().contains(actual)) return false;
 			}

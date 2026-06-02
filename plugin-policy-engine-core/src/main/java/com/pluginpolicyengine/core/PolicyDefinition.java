@@ -1,21 +1,22 @@
 package com.pluginpolicyengine.core;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
-/**
- * 기능 플래그 설정을 표현하는 불변 모델입니다.
- */
-public final class FlagDefinition {
+/** 정책 설정을 표현하는 불변 모델입니다. */
+public final class PolicyDefinition {
 	private final String key;
 	private final boolean enabled;
 	private final int rolloutPercent; // 0~100
 	private final Targeting targeting;
-	private final List<VariantAllocation> variants; // empty면 boolean flag처럼 사용
+	private final List<VariantAllocation> variants; // empty면 단일 정책처럼 사용
 	private final String defaultVariant;
 	private final Instant updatedAt;
 
-	private FlagDefinition(Builder b) {
+	private PolicyDefinition(Builder b) {
 		this.key = Objects.requireNonNull(b.key, "key");
 		this.enabled = b.enabled;
 		this.rolloutPercent = clamp(b.rolloutPercent, 0, 100);
@@ -28,12 +29,12 @@ public final class FlagDefinition {
 	private static int clamp(int v, int min, int max) { return Math.max(min, Math.min(max, v)); }
 
 	/**
-	 * @return 고유 기능 플래그 키
+	 * @return 고유 정책 키
 	 */
 	public String key() { return key; }
 
 	/**
-	 * @return 플래그의 전역 활성 여부
+	 * @return 정책의 전역 활성 여부
 	 */
 	public boolean enabled() { return enabled; }
 
@@ -43,7 +44,7 @@ public final class FlagDefinition {
 	public int rolloutPercent() { return rolloutPercent; }
 
 	/**
-	 * @return 플래그에 적용되는 타게팅 규칙
+	 * @return 정책에 적용되는 타게팅 규칙
 	 */
 	public Targeting targeting() { return targeting; }
 
@@ -63,15 +64,15 @@ public final class FlagDefinition {
 	public Instant updatedAt() { return updatedAt; }
 
 	/**
-	 * 지정한 플래그 키에 대한 빌더를 생성합니다.
+	 * 지정한 정책 키에 대한 빌더를 생성합니다.
 	 *
-	 * @param key 고유 기능 플래그 키
+	 * @param key 고유 정책 키
 	 * @return 정의 빌더
 	 */
 	public static Builder builder(String key) { return new Builder(key); }
 
 	/**
-	 * {@link FlagDefinition} 빌더입니다.
+	 * {@link PolicyDefinition} 빌더입니다.
 	 */
 	public static final class Builder {
 		private final String key;
@@ -85,7 +86,7 @@ public final class FlagDefinition {
 		private Builder(String key) { this.key = key; }
 
 		/**
-		 * 플래그 활성 여부를 설정합니다.
+		 * 정책 활성 여부를 설정합니다.
 		 *
 		 * @param v 활성 값
 		 * @return 현재 빌더
@@ -134,11 +135,11 @@ public final class FlagDefinition {
 		public Builder updatedAt(Instant t) { this.updatedAt = t; return this; }
 
 		/**
-		 * 불변 {@link FlagDefinition}을 생성합니다.
+		 * 불변 {@link PolicyDefinition}을 생성합니다.
 		 *
 		 * @return 정의 인스턴스
 		 */
-		public FlagDefinition build() { return new FlagDefinition(this); }
+		public PolicyDefinition build() { return new PolicyDefinition(this); }
 	}
 
 	/**
