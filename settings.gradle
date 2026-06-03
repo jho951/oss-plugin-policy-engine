@@ -5,18 +5,6 @@ pluginManagement {
     }
 }
 
-plugins {
-    id 'com.gradleup.nmcp.settings' version '1.4.4'
-}
-
-nmcpSettings {
-    centralPortal {
-        publishingType = 'USER_MANAGED'
-        username = System.getenv('MAVEN_CENTRAL_USERNAME')
-        password = System.getenv('MAVEN_CENTRAL_PASSWORD')
-    }
-}
-
 rootProject.name = "plugin-policy-engine"
 
 include 'plugin-policy-engine-api'

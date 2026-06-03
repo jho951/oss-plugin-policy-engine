@@ -12,11 +12,46 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import com.pluginpolicyengine.api.PolicyEngineClient;
+import com.pluginpolicyengine.core.PolicyDecision;
 import com.pluginpolicyengine.core.PolicyContext;
+import com.pluginpolicyengine.core.PolicyStore;
+import com.pluginpolicyengine.core.store.InMemoryPolicyStore;
+import com.pluginpolicyengine.store.file.JsonFilePolicyStore;
 
 class PolicyEngineClientFactoryTest {
 	@TempDir
 	Path tempDir;
+
+	@Test
+	void createStoreUsesMemoryStoreByDefault() {
+		assertThat(PolicyEngineClientFactory.createStore(null)).isInstanceOf(InMemoryPolicyStore.class);
+		assertThat(PolicyEngineClientFactory.createStore(PolicyEngineConfig.memory())).isInstanceOf(InMemoryPolicyStore.class);
+	}
+
+	@Test
+	void createStoreUsesJsonFilePolicyStoreForFileConfig() throws Exception {
+		Path policies = tempDir.resolve("policies.json");
+		Files.write(policies, "{}".getBytes(StandardCharsets.UTF_8));
+
+		PolicyStore store = PolicyEngineClientFactory.createStore(PolicyEngineConfig.builder()
+			.store(PolicyEngineConfig.Store.FILE)
+			.filePath(policies.toString())
+			.cacheTtl(Duration.ZERO)
+			.build());
+
+		assertThat(store).isInstanceOf(JsonFilePolicyStore.class);
+	}
+
+	@Test
+	void createsClientFromCustomStore() {
+		PolicyStore store = key -> java.util.Optional.of(com.pluginpolicyengine.core.PolicyDefinition.builder(key).build());
+
+		PolicyEngineClient client = PolicyEngineClientFactory.create(store);
+		PolicyDecision decision = client.evaluate("feature.one", PolicyContext.builder().userId("user-1").build());
+
+		assertThat(decision.allowed()).isTrue();
+		assertThat(decision.reason()).isEqualTo("ROLLOUT_IN");
+	}
 
 	@Test
 	void createsMemoryClientByDefault() {

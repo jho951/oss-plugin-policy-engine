@@ -24,6 +24,16 @@ def getRequiredIntProp(String key) {
     }
 }
 
+def getRequiredDecimalProp(String key) {
+    String value = getRequiredProp(key)
+
+    try {
+        return new BigDecimal(value)
+    } catch (NumberFormatException ex) {
+        throw new GradleException("Property '${key}' must be a decimal number, but was '${value}'.", ex)
+    }
+}
+
 def optionalProp(String key, String defaultValue = "") {
     if (!key?.trim()) {
         return defaultValue
@@ -79,6 +89,8 @@ ext.config = [
     junitVersion  : getRequiredProp("junit_version"),
     assertjVersion: getRequiredProp("assertj_version"),
     jacksonVersion: getRequiredProp("jackson_version"),
+    jacocoVersion : getRequiredProp("jacoco_version"),
+    coverageMinimum: getRequiredDecimalProp("coverage_minimum"),
     githubOrg     : getRequiredProp("github_org"),
     githubRepo    : getRequiredProp("github_repo")
 ]
@@ -86,6 +98,7 @@ ext.config = [
 ext.junit = config.junitVersion
 ext.assertj = config.assertjVersion
 ext.jackson = config.jacksonVersion
+ext.jacoco = config.jacocoVersion
 
 group = config.group
 version = config.version
@@ -234,6 +247,7 @@ subprojects {
         apply plugin: "java-platform"
     } else {
         apply plugin: "java-library"
+        apply plugin: "jacoco"
 
         extensions.configure(JavaPluginExtension) { javaExtension ->
             javaExtension.sourceCompatibility = JavaVersion.toVersion(rootProject.config.javaVersion)
@@ -258,6 +272,38 @@ subprojects {
 
         test {
             useJUnitPlatform()
+            finalizedBy jacocoTestReport
+            systemProperty "java.locale.providers", "COMPAT"
+        }
+
+        jacoco {
+            toolVersion = rootProject.config.jacocoVersion
+        }
+
+        jacocoTestReport {
+            dependsOn test
+            reports {
+                xml.required = true
+                csv.required = false
+                html.required = true
+            }
+        }
+
+        jacocoTestCoverageVerification {
+            dependsOn jacocoTestReport
+            violationRules {
+                rule {
+                    limit {
+                        counter = "LINE"
+                        value = "COVEREDRATIO"
+                        minimum = rootProject.config.coverageMinimum
+                    }
+                }
+            }
+        }
+
+        check {
+            dependsOn jacocoTestCoverageVerification
         }
 
         tasks.withType(Javadoc).configureEach {

@@ -49,6 +49,15 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '8'
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew clean test --no-daemon --stacktrace
+      - run: ./gradlew clean check --no-daemon --stacktrace
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jacoco-reports
+          path: |
+            **/build/reports/jacoco/test/
+            **/build/reports/jacoco/test/html/
+            **/build/reports/jacoco/test/jacocoTestReport.xml
+          if-no-files-found: error
