@@ -8,25 +8,31 @@ import java.util.Set;
 
 /** 허용/차단 및 속성 기반 자격 조건을 정의하는 타게팅 규칙입니다. */
 public final class Targeting {
+    /** 허용 유저 id */
 	private final Set<String> allowUserIds;
+    private final Set<String> allowGroups;
+    /** 금지 유저 id */
 	private final Set<String> denyUserIds;
-	private final Set<String> allowGroups;
 	private final Set<String> denyGroups;
+    /** 속성 기반 조건 */
 	private final Map<String, Set<String>> requireAttrsIn;
 
-	private Targeting(Builder b) {
+    private static Set<String> unmodSet(Set<String> s) {
+        return Collections.unmodifiableSet(new HashSet<>(s));
+    }
+
+    private static Map<String, Set<String>> unmodMapSet(Map<String, Set<String>> m) {
+        Map<String, Set<String>> out = new HashMap<>();
+        for (Map.Entry<String, Set<String>> e : m.entrySet()) out.put(e.getKey(), Collections.unmodifiableSet(new HashSet<>(e.getValue())));
+        return Collections.unmodifiableMap(out);
+    }
+
+    private Targeting(Builder b) {
 		this.allowUserIds = unmodSet(b.allowUserIds);
 		this.denyUserIds = unmodSet(b.denyUserIds);
 		this.allowGroups = unmodSet(b.allowGroups);
 		this.denyGroups = unmodSet(b.denyGroups);
 		this.requireAttrsIn = unmodMapSet(b.requireAttrsIn);
-	}
-
-	private static Set<String> unmodSet(Set<String> s) { return Collections.unmodifiableSet(new HashSet<>(s)); }
-	private static Map<String, Set<String>> unmodMapSet(Map<String, Set<String>> m) {
-		Map<String, Set<String>> out = new HashMap<>();
-		for (Map.Entry<String, Set<String>> e : m.entrySet()) out.put(e.getKey(), Collections.unmodifiableSet(new HashSet<>(e.getValue())));
-		return Collections.unmodifiableMap(out);
 	}
 
 	/**
@@ -99,9 +105,7 @@ public final class Targeting {
 		return true;
 	}
 
-	/**
-	 * {@link Targeting} 빌더입니다.
-	 */
+	/** {@link Targeting} 빌더입니다. */
 	public static final class Builder {
 		private final Set<String> allowUserIds = new HashSet<>();
 		private final Set<String> denyUserIds = new HashSet<>();
