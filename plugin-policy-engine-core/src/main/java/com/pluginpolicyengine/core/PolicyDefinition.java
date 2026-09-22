@@ -10,12 +10,16 @@ import java.util.Objects;
 public final class PolicyDefinition {
 	private final String key;
 	private final boolean enabled;
-	private final int rolloutPercent; // 0~100
+	private final int rolloutPercent;
 	private final Targeting targeting;
-	private final List<VariantAllocation> variants; // empty면 단일 정책처럼 사용
+	private final List<VariantAllocation> variants;
 	private final String defaultVariant;
 	private final Instant updatedAt;
 
+    /**
+     * 생성자
+     * @param b
+     */
 	private PolicyDefinition(Builder b) {
 		this.key = Objects.requireNonNull(b.key, "key");
 		this.enabled = b.enabled;
@@ -26,21 +30,17 @@ public final class PolicyDefinition {
 		this.updatedAt = b.updatedAt != null ? b.updatedAt : Instant.now();
 	}
 
-	private static int clamp(int v, int min, int max) { return Math.max(min, Math.min(max, v)); }
+	private static int clamp(int v, int min, int max) {
+        return Math.max(min, Math.min(max, v));
+    }
 
-	/**
-	 * @return 고유 정책 키
-	 */
+	/** @return 고유 정책 키 */
 	public String key() { return key; }
 
-	/**
-	 * @return 정책의 전역 활성 여부
-	 */
+	/** @return 정책의 전역 활성 여부 */
 	public boolean enabled() { return enabled; }
 
-	/**
-	 * @return 0~100 범위의 롤아웃 비율
-	 */
+	/** @return 0~100 범위의 롤아웃 비율 */
 	public int rolloutPercent() { return rolloutPercent; }
 
 	/**

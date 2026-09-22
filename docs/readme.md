@@ -15,4 +15,4 @@
 
 ### 모듈과 테스트
 
-- [테스트/CI 가이드](./testing-and-ci.md)
+- [테스트/CI 가이드](./test-and-ci.md)

@@ -14,7 +14,6 @@ public final class InMemoryPolicyStore implements PolicyStore {
 
 	/**
 	 * 키로 정책 정의를 조회합니다.
-	 *
 	 * @param key 정책 키
 	 * @return 정책이 존재하면 해당 정의
 	 */
@@ -25,7 +24,6 @@ public final class InMemoryPolicyStore implements PolicyStore {
 
 	/**
 	 * 현재 저장된 모든 정책 정의를 반환합니다.
-	 *
 	 * @return 전체 정책의 불변 뷰
 	 */
 	@Override
@@ -35,14 +33,12 @@ public final class InMemoryPolicyStore implements PolicyStore {
 
 	/**
 	 * 정책 정의를 추가하거나 교체합니다.
-	 *
 	 * @param def 저장할 정의
 	 */
 	public void put(PolicyDefinition def) { map.put(def.key(), def); }
 
 	/**
 	 * 키로 정책을 삭제합니다.
-	 *
 	 * @param key 정책 키
 	 */
 	public void remove(String key) { map.remove(key); }

@@ -199,6 +199,11 @@ def configurePublishedModule = { Project target, Map moduleMeta, String componen
             publication.artifactId = moduleMeta.artifactId
             publication.version = target.version.toString()
 
+            if (componentName == "java") {
+                publication.artifact(target.tasks.getByName("sourcesJar"))
+                publication.artifact(target.tasks.getByName("javadocJar"))
+            }
+
             configurePomMetadata(publication.pom, moduleMeta)
         }
     }
@@ -249,18 +254,21 @@ subprojects {
         apply plugin: "java-library"
         apply plugin: "jacoco"
 
-        extensions.configure(JavaPluginExtension) { javaExtension ->
-            javaExtension.sourceCompatibility = JavaVersion.toVersion(rootProject.config.javaVersion)
-            javaExtension.targetCompatibility = JavaVersion.toVersion(rootProject.config.javaVersion)
-            javaExtension.withSourcesJar()
-            javaExtension.withJavadocJar()
+        sourceCompatibility = JavaVersion.toVersion(rootProject.config.javaVersion)
+        targetCompatibility = JavaVersion.toVersion(rootProject.config.javaVersion)
+
+        task sourcesJar(type: Jar, dependsOn: classes) {
+            classifier = 'sources'
+            from sourceSets.main.allSource
         }
 
-        tasks.withType(JavaCompile).configureEach {
+        task javadocJar(type: Jar, dependsOn: javadoc) {
+            classifier = 'javadoc'
+            from javadoc.destinationDir
+        }
+
+        tasks.withType(JavaCompile) {
             options.encoding = rootProject.config.encoding
-            if (JavaVersion.current().isJava9Compatible()) {
-                options.release = rootProject.config.javaVersion
-            }
         }
 
         dependencies {
@@ -283,9 +291,9 @@ subprojects {
         jacocoTestReport {
             dependsOn test
             reports {
-                xml.required = true
-                csv.required = false
-                html.required = true
+                xml.enabled = true
+                csv.enabled = false
+                html.enabled = true
             }
         }
 
@@ -306,7 +314,7 @@ subprojects {
             dependsOn jacocoTestCoverageVerification
         }
 
-        tasks.withType(Javadoc).configureEach {
+        tasks.withType(Javadoc) {
             options.addStringOption("Xdoclint:none", "-quiet")
             options.encoding = rootProject.config.encoding
         }

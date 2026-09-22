@@ -3,6 +3,10 @@ package com.pluginpolicyengine.core;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 import com.pluginpolicyengine.core.store.InMemoryPolicyStore;
 
 import org.junit.jupiter.api.Test;
@@ -16,6 +20,18 @@ class PolicyEngineTest {
 		assertThatThrownBy(() -> new PolicyEngine(null))
 			.isInstanceOf(NullPointerException.class)
 			.hasMessage("store");
+	}
+
+	@Test
+	void emitsJava8CompatibleBytecode() throws IOException {
+		InputStream resource = PolicyEngine.class.getResourceAsStream("PolicyEngine.class");
+		assertThat(resource).isNotNull();
+
+		try (DataInputStream classFile = new DataInputStream(resource)) {
+			assertThat(classFile.readInt()).isEqualTo(0xCAFEBABE);
+			classFile.readUnsignedShort(); // minor version
+			assertThat(classFile.readUnsignedShort()).isEqualTo(52);
+		}
 	}
 
 	@Test

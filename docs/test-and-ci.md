@@ -42,6 +42,7 @@
 
 - 트리거: `main` 대상 PR, `main` push
 - Java: Temurin 8
+- Gradle Wrapper: 5.5.1
 - 수행:
   1. `./gradlew clean check --no-daemon --stacktrace`
   2. JaCoCo XML/HTML 리포트 artifact 업로드
@@ -50,6 +51,7 @@
 
 - 트리거: `v*` 태그 push
 - Java: Temurin 8
+- Gradle Wrapper: 5.5.1
 - 수행:
   1. `./gradlew check --no-daemon --stacktrace`
   2. `./gradlew -Prelease_version="$VERSION" publishToMavenLocal --no-daemon --stacktrace`

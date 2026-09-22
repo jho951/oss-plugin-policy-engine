@@ -37,21 +37,18 @@ public final class Targeting {
 
 	/**
 	 * 규칙이 없는 타게팅을 생성합니다.
-	 *
 	 * @return 별도 차단 규칙이 없다면 모두 허용하는 타게팅
 	 */
 	public static Targeting allowAll() { return builder().build(); }
 
 	/**
 	 * 타게팅 빌더를 생성합니다.
-	 *
 	 * @return 타게팅 빌더
 	 */
 	public static Builder builder() { return new Builder(); }
 
 	/**
 	 * 사용자/그룹 규칙에 의해 명시적으로 차단되는지 확인합니다.
-	 *
 	 * @param ctx 요청 컨텍스트
 	 * @return 차단 규칙과 일치하면 {@code true}
 	 */
@@ -77,7 +74,6 @@ public final class Targeting {
 
 	/**
 	 * eligibility 평가가 필요한 타게팅 조건이 하나라도 있는지 확인합니다.
-	 *
 	 * @return allow 사용자/그룹 또는 속성 조건이 있으면 {@code true}
 	 */
 	public boolean hasEligibilityRules() {
@@ -86,7 +82,6 @@ public final class Targeting {
 
 	/**
 	 * 컨텍스트가 자격(eligibility) 규칙을 만족하는지 확인합니다.
-	 *
 	 * @param ctx 요청 컨텍스트
 	 * @return 자격 조건을 만족하면 {@code true}
 	 */

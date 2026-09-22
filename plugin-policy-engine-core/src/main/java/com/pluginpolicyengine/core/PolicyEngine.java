@@ -13,14 +13,12 @@ public final class PolicyEngine {
 
 	/**
 	 * {@link PolicyStore}를 사용해 서비스를 생성합니다.
-	 *
 	 * @param store 정책 저장소
 	 */
 	public PolicyEngine(PolicyStore store) { this.store = Objects.requireNonNull(store, "store"); }
 
 	/**
 	 * 정책을 평가하고 상세 의사결정 정보를 반환합니다.
-	 *
 	 * @param key 정책 키
 	 * @param ctx 요청 컨텍스트
 	 * @return 평가 결과

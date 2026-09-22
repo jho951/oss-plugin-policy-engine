@@ -30,6 +30,3 @@ dependencies {
     implementation("io.github.jho951:plugin-policy-engine-config:<version>")
 }
 ```
-
-## 문서
-[README](docs/README.md)
