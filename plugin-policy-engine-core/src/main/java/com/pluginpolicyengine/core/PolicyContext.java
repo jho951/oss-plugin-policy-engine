@@ -9,9 +9,9 @@ import java.util.Collection;
 
 /** 타게팅 및 롤아웃 규칙 평가에 사용하는 요청 컨텍스트입니다. */
 public final class PolicyContext {
-	private final String userId;              // deterministic rollout/AB의 기준
-	private final Set<String> groups;         // "beta", "staff" 등
-	private final Map<String, String> attrs;  // "region"="KR", "plan"="PRO" 등
+	private final String userId;
+	private final Set<String> groups;
+	private final Map<String, String> attrs;
 
 	private PolicyContext(Builder b) {
 		this.userId = b.userId;
@@ -36,7 +36,6 @@ public final class PolicyContext {
 
 	/**
 	 * {@link PolicyContext} 빌더를 생성합니다.
-	 *
 	 * @return 컨텍스트 빌더
 	 */
 	public static Builder builder() { return new Builder(); }
@@ -51,7 +50,6 @@ public final class PolicyContext {
 
 		/**
 		 * 사용자 식별자를 설정합니다.
-		 *
 		 * @param userId 안정적인 사용자 식별자
 		 * @return 현재 빌더
 		 */
@@ -92,7 +90,6 @@ public final class PolicyContext {
 
 		/**
 		 * 불변 {@link PolicyContext}를 생성합니다.
-		 *
 		 * @return 새 컨텍스트 인스턴스
 		 */
 		public PolicyContext build() { return new PolicyContext(this); }
