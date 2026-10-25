@@ -6,7 +6,9 @@ import com.pluginpolicyengine.core.PolicyStore;
 import com.pluginpolicyengine.core.store.InMemoryPolicyStore;
 import com.pluginpolicyengine.store.file.JsonFilePolicyStore;
 
-/** 정책 엔진 구성 요소를 생성하는 순수 Java 팩토리입니다.*/
+/**
+ * 정책 엔진 구성 요소를 생성하는 순수 Java 팩토리입니다.
+ */
 public final class PolicyEngineClientFactory {
 	private PolicyEngineClientFactory() {}
 

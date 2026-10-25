@@ -29,7 +29,6 @@ public final class PolicyEngineConfig {
 
 	/**
 	 * 메모리 저장소 설정을 생성합니다.
-	 *
 	 * @return 메모리 저장소용 설정
 	 */
 	public static PolicyEngineConfig memory() {
@@ -38,7 +37,6 @@ public final class PolicyEngineConfig {
 
 	/**
 	 * 파일 저장소 설정을 생성합니다.
-	 *
 	 * @param filePath JSON 파일 경로
 	 * @return 파일 저장소용 설정
 	 */
@@ -48,7 +46,6 @@ public final class PolicyEngineConfig {
 
 	/**
 	 * 설정 빌더를 생성합니다.
-	 *
 	 * @return 설정 빌더
 	 */
 	public static Builder builder() {
@@ -119,7 +116,6 @@ public final class PolicyEngineConfig {
 
 		/**
 		 * 설정 객체를 생성합니다.
-		 *
 		 * @return 설정 객체
 		 */
 		public PolicyEngineConfig build() {

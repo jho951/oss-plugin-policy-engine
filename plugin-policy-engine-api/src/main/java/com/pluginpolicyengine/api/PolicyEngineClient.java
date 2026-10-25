@@ -7,7 +7,6 @@ import com.pluginpolicyengine.core.PolicyContext;
 public interface PolicyEngineClient {
 	/**
 	 * 주어진 컨텍스트에서 정책을 평가하고 상세 결정을 반환합니다.
-	 *
 	 * @param key 정책 키
 	 * @param ctx 요청/사용자 컨텍스트
 	 * @return 상세 평가 결과
@@ -16,7 +15,6 @@ public interface PolicyEngineClient {
 
 	/**
 	 * 주어진 컨텍스트에서 정책 허용 여부를 평가합니다.
-	 *
 	 * @param key 정책 키
 	 * @param ctx 요청/사용자 컨텍스트
 	 * @return 정책이 허용되면 {@code true}
@@ -27,7 +25,6 @@ public interface PolicyEngineClient {
 
 	/**
 	 * 주어진 정책을 평가하여 선택된 variant를 반환합니다.
-	 *
 	 * @param key 정책 키
 	 * @param ctx 요청/사용자 컨텍스트
 	 * @param fallbackVariant 정책 비활성 시 사용할 기본 variant

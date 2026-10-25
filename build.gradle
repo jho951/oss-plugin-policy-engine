@@ -254,16 +254,26 @@ subprojects {
         apply plugin: "java-library"
         apply plugin: "jacoco"
 
-        sourceCompatibility = JavaVersion.toVersion(rootProject.config.javaVersion)
-        targetCompatibility = JavaVersion.toVersion(rootProject.config.javaVersion)
+        java {
+            sourceCompatibility = JavaVersion.toVersion(rootProject.config.javaVersion)
+            targetCompatibility = JavaVersion.toVersion(rootProject.config.javaVersion)
+            if (rootProject.gradle.gradleVersion.tokenize('.')[0].toInteger() >= 7) {
+                toolchain {
+                    // Gradle 5.5.1 does not provide JavaLanguageVersion.
+                    def languageVersionClass = Class.forName('org.gradle.jvm.toolchain.JavaLanguageVersion')
+                    languageVersion.set(languageVersionClass.getMethod('of', Integer.TYPE)
+                        .invoke(null, rootProject.config.javaVersion))
+                }
+            }
+        }
 
         task sourcesJar(type: Jar, dependsOn: classes) {
-            classifier = 'sources'
+            archiveClassifier.set('sources')
             from sourceSets.main.allSource
         }
 
         task javadocJar(type: Jar, dependsOn: javadoc) {
-            classifier = 'javadoc'
+            archiveClassifier.set('javadoc')
             from javadoc.destinationDir
         }
 
@@ -291,9 +301,15 @@ subprojects {
         jacocoTestReport {
             dependsOn test
             reports {
-                xml.enabled = true
-                csv.enabled = false
-                html.enabled = true
+                if (rootProject.gradle.gradleVersion.tokenize('.')[0].toInteger() >= 7) {
+                    xml.required.set(true)
+                    csv.required.set(false)
+                    html.required.set(true)
+                } else {
+                    xml.enabled = true
+                    csv.enabled = false
+                    html.enabled = true
+                }
             }
         }
 

@@ -16,6 +16,7 @@ public final class JsonFilePolicyStore implements PolicyStore {
 
 	private final Path filePath;
 	private final long ttlMs;
+	private final boolean strict;
 	private final JsonPolicySerde serde;
 
 	private final AtomicReference<Cache> cacheRef = new AtomicReference<>(Cache.empty());
@@ -27,10 +28,21 @@ public final class JsonFilePolicyStore implements PolicyStore {
 	 * @param ttl 캐시 TTL(0이면 TTL 캐시 비활성)
 	 */
 	public JsonFilePolicyStore(String filePath, Duration ttl) {
+		this(filePath, ttl, false);
+	}
+
+	/** Creates a store that reports missing, unreadable, or invalid files when strict is true. */
+	public JsonFilePolicyStore(String filePath, Duration ttl, boolean strict) {
 		if (isBlank(filePath)) { throw new IllegalArgumentException("filePath is blank");}
 		this.filePath = Paths.get(filePath);
 		this.ttlMs = ttl == null ? 0L : Math.max(0L, ttl.toMillis());
+		this.strict = strict;
 		this.serde = new JsonPolicySerde();
+	}
+
+	/** Forces the next lookup to reload the file, including when its cache TTL has not expired. */
+	public void invalidate() {
+		cacheRef.set(Cache.empty());
 	}
 
 	/**
@@ -57,36 +69,37 @@ public final class JsonFilePolicyStore implements PolicyStore {
 	}
 
 	private Cache loadIfNeeded() {
-		long now = System.currentTimeMillis();
-		Cache cur = cacheRef.get();
+		while (true) {
+			long now = System.currentTimeMillis();
+			Cache cur = cacheRef.get();
 
-		// TTL이 0이면 매번 읽기(원하면 TTL>0 권장)
-		if (ttlMs > 0 && (now - cur.loadedAtMs) < ttlMs && cur.loadedAtMs > 0) {
-			return cur;
+			// TTL이 0이면 매번 읽기(원하면 TTL>0 권장)
+			if (ttlMs > 0 && (now - cur.loadedAtMs) < ttlMs && cur.loadedAtMs > 0) {
+				return cur;
+			}
+
+			// 파일 mtime 체크로 “TTL 지나도 파일 안 바뀌면 재파싱 생략” (가벼운 최적화)
+			long mtime = lastModifiedMillis(filePath);
+			Cache next;
+			if (cur.loadedAtMs > 0 && cur.fileMtimeMs == mtime && ttlMs > 0) {
+				next = new Cache(cur.policies, now, mtime);
+			} else {
+				next = new Cache(readAndParse(filePath), now, mtime);
+			}
+			if (cacheRef.compareAndSet(cur, next)) return next;
 		}
-
-		// 파일 mtime 체크로 “TTL 지나도 파일 안 바뀌면 재파싱 생략” (가벼운 최적화)
-		long mtime = lastModifiedMillis(filePath);
-		if (cur.loadedAtMs > 0 && cur.fileMtimeMs == mtime && ttlMs > 0) {
-			cacheRef.set(new Cache(cur.policies, now, mtime));
-			return cacheRef.get();
-		}
-
-		// reload
-		Map<String, PolicyDefinition> parsed = readAndParse(filePath);
-		Cache next = new Cache(parsed, now, mtime);
-		cacheRef.set(next);
-		return next;
 	}
 
 	private Map<String, PolicyDefinition> readAndParse(Path path) {
 		if (!Files.exists(path)) {
+			if (strict) throw new IllegalStateException("Policy file does not exist: " + path);
 			return new HashMap<>();
 		}
 		try {
 			String json = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-			return serde.parseToMap(json);
+			return serde.parseToMap(json, strict);
 		} catch (IOException e) {
+			if (strict) throw new IllegalStateException("Unable to read policy file: " + path, e);
 			// 운영에서는 로깅 후 “이전 캐시 유지” 같은 전략도 가능
 			return new HashMap<>();
 		}
@@ -117,6 +130,9 @@ public final class JsonFilePolicyStore implements PolicyStore {
 	}
 
 	private static boolean isBlank(String value) {
-		return value == null || value.trim().isEmpty();
+        if(value == null){
+            return false;
+        }
+		return value.trim().isEmpty();
 	}
 }

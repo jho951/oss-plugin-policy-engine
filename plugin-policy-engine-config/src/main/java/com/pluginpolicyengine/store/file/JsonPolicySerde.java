@@ -40,7 +40,14 @@ final class JsonPolicySerde {
 	 * @return 파싱된 정책 맵(입력이 잘못되었거나 읽을 수 없으면 빈 맵)
 	 */
 	Map<String, PolicyDefinition> parseToMap(String json) {
-		if (isBlank(json)) return new HashMap<>();
+		return parseToMap(json, false);
+	}
+
+	Map<String, PolicyDefinition> parseToMap(String json, boolean strict) {
+		if (isBlank(json)) {
+			if (strict) throw new IllegalArgumentException("Policy JSON is blank");
+			return new HashMap<>();
+		}
 
 		try {
 			JsonNode root = om.readTree(json);
@@ -48,6 +55,7 @@ final class JsonPolicySerde {
 
 			if (root.isArray()) {
 				for (JsonNode n : root) {
+					if (strict) validateEntry(n);
 					PolicyDefinition def = toCore(n);
 					if (def != null) out.put(def.key(), def);
 				}
@@ -60,6 +68,7 @@ final class JsonPolicySerde {
 					Map.Entry<String, JsonNode> e = it.next();
 					String key = e.getKey();
 					JsonNode node = e.getValue();
+					if (strict) validateEntry(node);
 
 					PolicyDefinition def = toCore(node, key);
 					if (def != null) out.put(def.key(), def);
@@ -67,9 +76,21 @@ final class JsonPolicySerde {
 				return out;
 			}
 
+			if (strict) throw new IllegalArgumentException("Policy JSON must be an object or array");
 			return out;
 		} catch (Exception e) {
+			if (strict) throw new IllegalArgumentException("Invalid policy JSON", e);
 			return new HashMap<>();
+		}
+	}
+
+	private static void validateEntry(JsonNode node) {
+		if (node == null || !node.isObject()) {
+			throw new IllegalArgumentException("Policy entry must be an object");
+		}
+		JsonNode enabled = node.get("enabled");
+		if (enabled == null || !enabled.isBoolean()) {
+			throw new IllegalArgumentException("Policy enabled must be a boolean");
 		}
 	}
 

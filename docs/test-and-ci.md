@@ -2,6 +2,8 @@
 
 ## 로컬 테스트 실행
 
+아래 명령은 저장소 루트에서 실행합니다. 현재 위치가 `docs`라면 `../gradlew -p .. clean check`를 사용합니다.
+
 ### 전체 빌드
 
 ```bash
@@ -41,17 +43,17 @@
 ### `build.yml`
 
 - 트리거: `main` 대상 PR, `main` push
-- Java: Temurin 8
-- Gradle Wrapper: 5.5.1
+- Java: Temurin 8; Gradle 9.4.1 실행 시 Temurin 21도 설치
+- Gradle: 5.5.1, 6.9.4, 7.6.4, 8.14.3, 9.4.1 매트릭스
 - 수행:
-  1. `./gradlew clean check --no-daemon --stacktrace`
+  1. `gradle clean check --no-daemon --stacktrace`
   2. JaCoCo XML/HTML 리포트 artifact 업로드
 
 ### `publish.yml`
 
 - 트리거: `v*` 태그 push
 - Java: Temurin 8
-- Gradle Wrapper: 5.5.1
+- Gradle Wrapper: 8.14.3
 - 수행:
   1. `./gradlew check --no-daemon --stacktrace`
   2. `./gradlew -Prelease_version="$VERSION" publishToMavenLocal --no-daemon --stacktrace`

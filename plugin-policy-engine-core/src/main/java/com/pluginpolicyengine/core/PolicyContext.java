@@ -92,6 +92,8 @@ public final class PolicyContext {
 		 * 불변 {@link PolicyContext}를 생성합니다.
 		 * @return 새 컨텍스트 인스턴스
 		 */
-		public PolicyContext build() { return new PolicyContext(this); }
+		public PolicyContext build() {
+            return new PolicyContext(this);
+        }
 	}
 }

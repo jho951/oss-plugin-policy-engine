@@ -189,6 +189,31 @@ class JsonFilePolicyStoreTest {
 		assertThat(store.find("checkout.newFlow")).get().extracting("enabled").isEqualTo(true);
 	}
 
+	@Test
+	void strictStoreReportsMissingAndMalformedFiles() throws Exception {
+		Path policies = tempDir.resolve("strict.json");
+		JsonFilePolicyStore store = new JsonFilePolicyStore(policies.toString(), Duration.ZERO, true);
+		assertThatThrownBy(store::findAll).isInstanceOf(IllegalStateException.class);
+
+		writeJson(policies, "{not-json");
+		assertThatThrownBy(store::findAll).isInstanceOf(IllegalArgumentException.class);
+
+		writeJson(policies, "{\"flag\":{\"enabled\":\"false\"}}");
+		assertThatThrownBy(store::findAll).isInstanceOf(IllegalArgumentException.class);
+	}
+
+	@Test
+	void invalidateReloadsBeforeTtlExpires() throws Exception {
+		Path policies = tempDir.resolve("policies.json");
+		writePolicy(policies, "checkout.newFlow", true);
+		JsonFilePolicyStore store = new JsonFilePolicyStore(policies.toString(), Duration.ofHours(1), true);
+		assertThat(store.find("checkout.newFlow")).get().extracting("enabled").isEqualTo(true);
+
+		writePolicy(policies, "checkout.newFlow", false);
+		store.invalidate();
+		assertThat(store.find("checkout.newFlow")).get().extracting("enabled").isEqualTo(false);
+	}
+
 	private static void writePolicy(Path path, String key, boolean enabled) throws Exception {
 		String json = "{\n"
 			+ "  \"" + key + "\": {\n"

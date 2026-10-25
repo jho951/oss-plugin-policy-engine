@@ -25,7 +25,7 @@ dependencies {
 | 애플리케이션 클라이언트 계약       | `plugin-policy-engine-api`    |
 | JSON file store와 기본 조립 | `plugin-policy-engine-config` |
 
-### 2. 메모리 저장소
+### 1. 메모리 저장소
 
 ```java
 InMemoryPolicyStore store = new InMemoryPolicyStore();
@@ -33,7 +33,6 @@ store.put(PolicyDefinition.builder("checkout.newFlow")
     .enabled(true)
     .rolloutPercent(50)
     .targeting(Targeting.builder()
-        .allowGroup("beta")
         .requireAttrIn("region", new HashSet<String>(Arrays.asList("KR", "JP")))
         .build())
     .variant("A", 50)
@@ -45,7 +44,6 @@ PolicyEngineClient policies = PolicyEngineClientFactory.create(store);
 
 PolicyContext ctx = PolicyContext.builder()
     .userId("user-1")
-    .group("beta")
     .attr("region", "KR")
     .build();
 
@@ -61,7 +59,7 @@ String variant = decision.variant();
 - OFF일 때 어떤 응답이나 fallback을 사용할지
 - 평가 결과를 어떻게 로깅하거나 metric으로 남길지
 
-### 3. JSON File Store
+### 2. JSON File Store
 
 ```java
 PolicyEngineClient policies = PolicyEngineClientFactory.create(
@@ -112,7 +110,7 @@ List 형태:
 ]
 ```
 
-### 4. 평가 순서
+### 3. 평가 순서
 
 `PolicyEngine.evaluate`는 아래 순서로 평가합니다.
 
@@ -124,10 +122,11 @@ List 형태:
 6. `ROLLOUT_OUT`: 롤아웃 버킷 탈락 시 OFF
 7. `ROLLOUT_IN`: 롤아웃 통과 시 ON
 
-### 5. Rollout과 Variant
+### 4. Rollout과 Variant
 
 - rollout 기준값은 `userId` 우선, 없으면 `attrs["anonId"]`를 사용합니다.
-- 기준값이 없으면 안전하게 OFF 처리합니다.
+- rollout 비율이 1~99%일 때 기준값이 없으면 OFF 처리합니다.
+- `allowUserIds` 또는 `allowGroups`에 명시적으로 포함된 사용자는 rollout 비율 검사를 건너뜁니다.
 - 해시는 SHA-256 기반으로 계산되어 동일 입력에 대해 결정론적입니다.
 - `variants`가 비어 있으면 `defaultVariant`를 사용합니다.
 - `variants`가 있으면 각 `weight` 합계를 기준으로 버킷을 나눕니다.
